@@ -1,4 +1,5 @@
 torch
+scikit-learn==1.2.2
 skimage
 numpy
 matplotlib
