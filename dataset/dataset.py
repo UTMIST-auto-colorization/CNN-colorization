@@ -15,7 +15,6 @@ class ColorizationDataset(Dataset):
     def __init__(
         self,
         dataset_path: str,
-        cielab_conversion: CIELabConversion = CIELabConversion(),
         grayscale_name_prefix: str = "gray",
         color_name_prefix: str = "color",
         bucket_label_prefix: str = "bucket",
@@ -41,6 +40,7 @@ class ColorizationDataset(Dataset):
 
     def __getitem__(self, index: int) -> T.Tuple[np.ndarray, np.ndarray]:
         grayscale_image_path = self.grayscale_images[index]
+        
         # There's probably a better way to do this
         bucket_label_path = (self.bucket_label_prefix +
                              "_" +
