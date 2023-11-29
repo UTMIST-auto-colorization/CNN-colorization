@@ -12,13 +12,13 @@ class ModifiedColorizer(BaseColor):
         numExtraConv2DLayers = config.numExtraConv2DLayers
         channelMultiplier = config.channelMultiplier
 
-        channels1 = [1, 64 * channelMultiplier, 64 * channelMultiplier]
-        channels2 = [64 * channelMultiplier, 128 * channelMultiplier, 128 * channelMultiplier]
-        channels3 = [128 * channelMultiplier, 256 * channelMultiplier, 256 * channelMultiplier, 256 * channelMultiplier]
-        channels4 = [256 * channelMultiplier, 512 * channelMultiplier, 512 * channelMultiplier, 512 * channelMultiplier]
-        channels5 = [512 * channelMultiplier, 512 * channelMultiplier, 512 * channelMultiplier, 512 * channelMultiplier]
-        channels6 = [512 * channelMultiplier, 512 * channelMultiplier, 512 * channelMultiplier, 512 * channelMultiplier]
-        channels7 = [512 * channelMultiplier, 512 * channelMultiplier, 512 * channelMultiplier, 512 * channelMultiplier]
+        channels1 = [1] +  [64 * channelMultiplier] * 2
+        channels2 = [64 * channelMultiplier] + [128 * channelMultiplier] * 2
+        channels3 = [128 * channelMultiplier] + [256 * channelMultiplier] * 3
+        channels4 = [256 * channelMultiplier] +  [512 * channelMultiplier] * 3
+        channels5 = [512 * channelMultiplier] * 4
+        channels6 = [512 * channelMultiplier] * 4
+        channels7 = [512 * channelMultiplier] * 4
 
         self.model1 = build_basic_block(channels=channels1, kernel_size=3, stride=[1, 2], dropout=dropoutLayers[0])
         self.model2 = build_basic_block(channels=channels2, kernel_size=3, stride=[1, 2], dropout=dropoutLayers[1])
@@ -33,20 +33,20 @@ class ModifiedColorizer(BaseColor):
               newLayer = build_basic_block(channels=[512 * channelMultiplier] * 4, kernel_size=3)
               additional.append(newLayer)
 
-        self.additional_layers = nn.ModuleList(additional)
+        self.additional_layers = nn.Sequential(additional)
 
         self.model8 = build_basic_block(
-              channels=[512 * channelMultiplier, 256 * channelMultiplier, 256 * channelMultiplier, 256 * channelMultiplier], kernel_size=[4, 3, 3], stride=[2, 1, 1], 
+              channels=[512 * channelMultiplier] + [256 * channelMultiplier] * 3, kernel_size=[4, 3, 3], stride=[2, 1, 1], 
               norm_layer=False, conv_type=[nn.ConvTranspose2d, nn.Conv2d, nn.Conv2d],
               dropout=dropoutLayers[7]
         )
         self.model9 = build_basic_block(
-              channels=[256 * channelMultiplier, 128 * channelMultiplier, 128 * channelMultiplier, 128 * channelMultiplier], kernel_size=[4, 3, 3], stride=[2, 1, 1], 
+              channels=[256 * channelMultiplier] + [128 * channelMultiplier] * 3, kernel_size=[4, 3, 3], stride=[2, 1, 1], 
               norm_layer=False, conv_type=[nn.ConvTranspose2d, nn.Conv2d, nn.Conv2d],
               dropout=dropoutLayers[8]
         )
         self.model10 = build_basic_block(
-              channels=[128 * channelMultiplier, 64 * channelMultiplier, 64 * channelMultiplier, 64 * channelMultiplier], kernel_size=[4, 3, 3], stride=[2, 1, 1], 
+              channels=[128 * channelMultiplier] + [64 * channelMultiplier] * 3, kernel_size=[4, 3, 3], stride=[2, 1, 1], 
               norm_layer=False, conv_type=[nn.ConvTranspose2d, nn.Conv2d, nn.Conv2d],
               dropout=dropoutLayers[9]
         )
