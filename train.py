@@ -69,7 +69,7 @@ def get_dataloader(data_path: str, batch_size: int = 8, num_workers: int = 0) ->
     transform = transforms.Compose([
         transforms.ToTensor(),
     ])
-    dataset = ColorizationDataset(data_path, transform=transform)
+    dataset = ColorizationDataset(data_path)
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=num_workers)
     return dataloader
 
@@ -110,6 +110,8 @@ class TrainingLogger:
         plt.plot(*zip(*self.train_loss), label='train', color='blue')
         plt.plot(*zip(*self.eval_loss), label='eval', color='orange')
         plt.legend()
+        if not output_dir.exists():
+            output_dir.mkdir(parents=True)
         plt.savefig(output_dir / f'{model_name}_loss.png')
 
 def eval(
@@ -122,7 +124,8 @@ def eval(
     with torch.no_grad():
         running_loss = 0.0
         for data in dataloader:
-            _, _, rs_l, rs_ab = data
+            rs_l, rs_ab = data
+            rs_l = rs_l[:, None, :, :]
             batch_size = rs_l.shape[0]
             inputs = rs_l.to(device)
             labels = rs_ab.to(device)
@@ -152,7 +155,8 @@ def train(
         with tqdm(desc=desc, total=len(trainloader), leave=True, miniters=1, unit='ex',
                 unit_scale=True, bar_format=bar_fmt, position=0) as progbar:
             for i, data in enumerate(trainloader):
-                _, _, rs_l, rs_ab = data
+                rs_l, rs_ab = data
+                rs_l = rs_l[:, None, :, :]
                 batch_size = rs_l.shape[0]
                 inputs = rs_l.to(device)
                 labels = rs_ab.to(device)

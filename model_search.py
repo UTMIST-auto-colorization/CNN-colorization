@@ -55,10 +55,7 @@ class MSPipeline:
         # Save best model config
         best_model_config.dump(self.output_dir / 'best_model.json')
 
-
-if __name__ == '__main__':
-    train_data_path = ""
-    test_data_path = ""
+def search(train_data_path, test_data_path):
     trainloader = get_dataloader(train_data_path)
     testloader = get_dataloader(test_data_path)
 
@@ -72,3 +69,9 @@ if __name__ == '__main__':
     pipeline = MSPipeline(output_dir, models_config, trainloader, testloader)
     device = get_device()
     pipeline.train(n_epochs=1, device=device)
+
+
+if __name__ == '__main__':
+    train_data_path = ""
+    test_data_path = ""
+    model_search(train_data_path, test_data_path)
