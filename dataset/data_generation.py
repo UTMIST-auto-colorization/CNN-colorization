@@ -12,6 +12,7 @@ from dataset.data_utils import resize_image
 
 import typing as T
 
+
 def create_dataset(
     images_path: str,
     output_path: str,
@@ -41,6 +42,11 @@ def create_dataset(
 
     for image_path in tqdm(images_path.iterdir(), total=length):
         image = imread(image_path.absolute().as_posix())
+
+        # Skips greyscale images as they are useless for dataset
+        if len(image.shape) < 3:
+            continue
+
         if resize_image_size:
             image = resize_image(image, shape=resize_image_size)
 
@@ -58,8 +64,8 @@ def create_dataset(
         )
         bucket_label_output = (
             bucket_labels_path.joinpath(bucket_label_prefix +
-                                    "_" +
-                                    image_path.stem).absolute().as_posix() +
+                                        "_" +
+                                        image_path.stem).absolute().as_posix() +
             ".npy"
         )
         imsave(color_image_output, img_as_ubyte(image))
@@ -74,19 +80,26 @@ def create_dataset(
 
 if __name__ == "__main__":
     from ast import literal_eval
+
     def none_or_tuple(value):
         if value == 'None':
             return None
         return literal_eval(value)
-    
+
     parser = argparse.ArgumentParser()
-    parser.add_argument("input_path", help="Path to images to create dataset from")
+    parser.add_argument(
+        "input_path", help="Path to images to create dataset from")
     parser.add_argument("output_path", help="Path to output dataset to")
-    parser.add_argument("-g", "--gray_prefix", default="gray", help="Name prefix for grayscale output images")
-    parser.add_argument("-c", "--color_prefix", default="color", help="Name prefix for color output images")
-    parser.add_argument("-b", "--bucket_prefix", default="bucket", help="Name prefix for image bucket labels")
-    parser.add_argument("--buckets_path", default="resources/buckets_313.npy", help="Path to quantized ab-value buckets")
-    parser.add_argument("-r", "--resize-image-size", default="(256, 256)", type=none_or_tuple, help="(w, h) tuple to resize images to or None")
+    parser.add_argument("-g", "--gray_prefix", default="gray",
+                        help="Name prefix for grayscale output images")
+    parser.add_argument("-c", "--color_prefix", default="color",
+                        help="Name prefix for color output images")
+    parser.add_argument("-b", "--bucket_prefix", default="bucket",
+                        help="Name prefix for image bucket labels")
+    parser.add_argument("--buckets_path", default="resources/buckets_313.npy",
+                        help="Path to quantized ab-value buckets")
+    parser.add_argument("-r", "--resize-image-size", default="(256, 256)",
+                        type=none_or_tuple, help="(w, h) tuple to resize images to or None")
     args = parser.parse_args()
 
     create_dataset(args.input_path,
