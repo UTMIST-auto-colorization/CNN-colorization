@@ -55,14 +55,9 @@ class MSPipeline:
         # Save best model config
         best_model_config.dump(self.output_dir / 'best_model.json')
 
-def search(train_data_path, test_data_path, output_path=None):
+def search(models_config, train_data_path, test_data_path, output_path=None):
     trainloader = get_dataloader(train_data_path)
     testloader = get_dataloader(test_data_path)
-
-    # Define models
-    models_config = [
-        ModelConfig('model1', dropout=[]),
-    ]
 
     # Train
     if not output_path:
@@ -73,6 +68,9 @@ def search(train_data_path, test_data_path, output_path=None):
 
 
 if __name__ == '__main__':
+    models_config = [
+        ModelConfig('model1', dropout=[]),
+    ]
     train_data_path = ""
     test_data_path = ""
-    search(train_data_path, test_data_path)
+    search(models_config, train_data_path, test_data_path)
