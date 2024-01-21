@@ -128,7 +128,7 @@ def eval(
             rs_l = rs_l[:, None, :, :]
             batch_size = rs_l.shape[0]
             inputs = rs_l.to(device)
-            labels = rs_ab.to(device)
+            labels = rs_ab.type(torch.LongTensor).to(device)
             
             outputs = net(inputs)
             loss = criterion(outputs, labels)
@@ -159,7 +159,7 @@ def train(
                 rs_l = rs_l[:, None, :, :]
                 batch_size = rs_l.shape[0]
                 inputs = rs_l.to(device)
-                labels = rs_ab.to(device)
+                labels = rs_ab.type(torch.LongTensor).to(device)
 
                 optimizer.zero_grad()
                 outputs = net(inputs)
