@@ -51,7 +51,8 @@ class ModifiedColorizer(BaseColor):
               dropout=dropoutLayers[9]
         )
         self.model10.append(nn.Conv2d(64 * channelMultiplier, 313, kernel_size=1, stride=1, padding=0, bias=True))
-        self.softmax = nn.Softmax(dim=1)
+
+        self._initialize_weights()
 
     def forward(self, input_l):
         conv1_2 = self.model1(self.normalize_l(input_l))
@@ -68,9 +69,15 @@ class ModifiedColorizer(BaseColor):
 
         conv8_3 = self.model8(conv7_3)
         conv9_3 = self.model9(conv8_3)
-        conv10_3 = self.model10(conv9_3)
-        out_reg = self.softmax(conv10_3)
+        out_reg = self.model10(conv9_3)
         return out_reg
+    
+    def _initialize_weights(self):
+        for m in self.modules():
+            if isinstance(m, nn.Conv2d):
+                nn.init.kaiming_uniform_(m.weight)
+                if m.bias is not None:
+                    nn.init.constant_(m.bias, 0)
 
 def modified_colorizer(config):
 	model = ModifiedColorizer(config)

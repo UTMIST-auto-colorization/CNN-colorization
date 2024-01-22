@@ -172,13 +172,13 @@ def train(
                 if logger is not None:
                     logger.log_train_loss(i+1, iter_loss)
                 running_loss += iter_loss
-                progbar.set_postfix({'loss': '%.3g' % (running_loss / (i+1))})
+                progbar.set_postfix({'loss': '%.5g' % (running_loss / (i+1))})
                 progbar.update(1)
             
             eval_loss = eval(net, testloader, device, criterion)
             if logger is not None:
                 logger.log_eval_loss(i+1, eval_loss)
-            progbar.set_postfix({'loss': '%.3g' % (running_loss / (i+1)), 'eval_loss': '%.3g' % eval_loss})
+            progbar.set_postfix({'loss': '%.5g' % (running_loss / (i+1)), 'eval_loss': '%.5g' % eval_loss})
             
             if eval_loss < best_eval_loss:
                 best_eval_loss = eval_loss
